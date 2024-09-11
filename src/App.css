@@ -1,0 +1,24 @@
+* {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  color: #ffffff;
+  background-color: #ff00d4a1;
+}
+
+h1 {
+  font-size: 2.5rem;
+  text-align: center;
+}
+
+.teungku {
+  width: 100px;
+  height: 100px;
+  border: solid 2px #ffffff;
+  border-radius: 100%;
+}
