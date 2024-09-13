@@ -1,40 +1,72 @@
-import React, { useEffect, useRef } from 'react'
-import { useGLTF } from '@react-three/drei'
+import React, { useRef, useState, useEffect } from 'react'
 import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
+import { Environment, useGLTF } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 
 gsap.registerPlugin(ScrollTrigger);
 
 export function Setup(props) {
-    const { nodes, materials } = useGLTF('./models/setupTeungku.gltf')
-    const group = useRef();
+    const { nodes, materials } = useGLTF('./models/setupTeungku.gltf');
+    const wrapperRef = useRef();
+    const groupRef = useRef();
+    const popIn = useRef();
+    const slideOfleft = useRef();
+    const [direction, setDirection] = useState(1);
 
     useFrame(() => {
-        group.current.rotation.y += 0.01;
+        if (groupRef.current) {
+            groupRef.current.rotation.y += direction * 0.001;
+
+            if (groupRef.current.rotation.y > Math.PI / 6) { 
+                setDirection(-1);
+            } else if (groupRef.current.rotation.y < -Math.PI / 6) {
+                setDirection(1);
+            }
+        }
     });
 
     useEffect(() => {
-        gsap.fromTo(
-            group.current.position,
-            { y: -1.5 },
-            {
-                x: 1,
-                scrollTrigger: {
-                    trigger: '#home',
-                    start: 'top top',
-                    end: 'bottom bottom',
-                    scrub: true,
-                },
+        const tl = gsap.timeline({ defaults: { ease: "power2.out", duration: 1 } });
+        const meshes = popIn.current.children;
+    
+        Array.from(meshes).forEach((mesh, index) => {
+    
+            if (mesh.material) {
+                mesh.material.transparent = true;
+                mesh.material.opacity = 0;
+                tl.to(mesh.material, { opacity: 1, duration: 0.5 }, index * 0.2);
             }
-        );
+    
+            tl.from(mesh.scale, { x: 0, y: 0, z: 0, duration: 0.5 }, index * 0.2);
+        });
     }, []);
+
+    useEffect(() => {
+        const tl = gsap.timeline({ defaults: { ease: "power1.out", duration: 1 } });
+        const meshes = slideOfleft.current.children;
+    
+        Array.from(meshes).forEach((mesh, index) => {
+    
+            if (mesh.material) {
+                mesh.material.transparent = true;
+                mesh.material.opacity = 0;
+                tl.to(mesh.material, { opacity: 1, duration: 0.5 }, index * 0.2);
+            }
+    
+            tl.from(mesh.position, { x: "-=10", duration: 0.5 }, index * 0.2);
+        });
+    }, []);
+
     return (
         <>
-        <hemisphereLight position={[1, 0, 0]} intensity={3} color={'#cf00ff'}/>
-        <pointLight position={[0, 1, 0]} intensity={3} color={'#cf00ff'}/>
-        <directionalLight position={[0, 0, 1]} intensity={3} color={'#cf00ff'}/>
-        <group ref={group} {...props} dispose={null} rotation={[Math.PI / 6, Math.PI, 0]} >
+        <ambientLight intensity={0.5} />
+        <pointLight position={[10, 0, 0]} intensity={500} color={'#FF4500'}/>
+        <pointLight position={[-10, 0, 0]} intensity={500} color={'#F0F8FF'}/>
+        <pointLight position={[2, 2, 2]} intensity={10} />
+        <Environment preset="night" />
+    <group ref={wrapperRef} rotation={[Math.PI / 6, Math.PI, 0]} >
+        <group ref={groupRef} {...props} dispose={null} >
             <group
                 name="Kursi"
                 position={[5.636, 3.8, -4.678]}
@@ -89,7 +121,7 @@ export function Setup(props) {
                 scale={0.014}
                 userData={{ name: 'Keyboard' }}
             />
-            <group
+            <group ref={popIn}
                 name="LapTop"
                 position={[-0.663, 10.7, 3.722]}
                 rotation={[-Math.PI, 1.57, -Math.PI]}
@@ -125,7 +157,7 @@ export function Setup(props) {
                     material={materials.Screen}
                 />
             </group>
-            <group
+            <group 
                 name="Asbak"
                 position={[3.77, 11.025, 1.272]}
                 rotation={[0, -0.799, 0]}
@@ -170,7 +202,7 @@ export function Setup(props) {
                 scale={[17.172, 21.149, 17.836]}
                 userData={{ name: 'Meja' }}
             />
-            <mesh
+            <mesh 
                 name="Project"
                 castShadow
                 receiveShadow
@@ -181,7 +213,7 @@ export function Setup(props) {
                 scale={[-13.537, -0.56, -13.537]}
                 userData={{ name: 'Project' }}
             />
-            <group
+            <group ref={slideOfleft}
                 name="TeungkubgMerah"
                 position={[4.752, 11.858, 4.435]}
                 rotation={[Math.PI / 2, 0, 2.63]}
@@ -201,7 +233,7 @@ export function Setup(props) {
                     geometry={nodes.TeungkubgMerah_2.geometry}
                     material={materials.BingkaiFoto}
                 />
-                <mesh
+                <mesh 
                     name="Cube"
                     castShadow
                     receiveShadow
@@ -214,6 +246,7 @@ export function Setup(props) {
                 />
             </group>
         </group>
+    </group>
         </>
         )
     }

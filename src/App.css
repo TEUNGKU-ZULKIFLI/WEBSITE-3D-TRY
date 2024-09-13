@@ -7,12 +7,6 @@
 
 body {
   font-family: 'Roboto', sans-serif;
-  color: #ffffff;
-  background-color: #ff00d4a1;
-}
-
-h1 {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  color: #E0E0E0;
+  background-color: #121212;
 }
