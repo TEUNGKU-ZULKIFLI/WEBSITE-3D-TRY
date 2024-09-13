@@ -1,23 +1,40 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
+import gsap from 'gsap'
+import ScrollTrigger from 'gsap/ScrollTrigger'
 import { useFrame } from '@react-three/fiber'
+
+gsap.registerPlugin(ScrollTrigger);
 
 export function Setup(props) {
     const { nodes, materials } = useGLTF('./models/setupTeungku.gltf')
-    const groupRef = useRef();
+    const group = useRef();
 
     useFrame(() => {
-        if (groupRef.current) {
-            groupRef.current.rotation.y += 0.001;
-        }
+        group.current.rotation.y += 0.01;
     });
 
+    useEffect(() => {
+        gsap.fromTo(
+            group.current.position,
+            { y: -1.5 },
+            {
+                x: 1,
+                scrollTrigger: {
+                    trigger: '#home',
+                    start: 'top top',
+                    end: 'bottom bottom',
+                    scrub: true,
+                },
+            }
+        );
+    }, []);
     return (
         <>
         <hemisphereLight position={[1, 0, 0]} intensity={3} color={'#cf00ff'}/>
         <pointLight position={[0, 1, 0]} intensity={3} color={'#cf00ff'}/>
         <directionalLight position={[0, 0, 1]} intensity={3} color={'#cf00ff'}/>
-        <group ref={groupRef} {...props} dispose={null} rotation={[Math.PI / 6, Math.PI, 0]} >
+        <group ref={group} {...props} dispose={null} rotation={[Math.PI / 6, Math.PI, 0]} >
             <group
                 name="Kursi"
                 position={[5.636, 3.8, -4.678]}
@@ -198,7 +215,7 @@ export function Setup(props) {
             </group>
         </group>
         </>
-    )
-}
+        )
+    }
 
 useGLTF.preload('./models/setupTeungku.gltf')

@@ -1,25 +1,23 @@
 import React from 'react'
 import { Canvas } from '@react-three/fiber'
 import { Setup } from './components/Setup'
-import { ScrollControls, Scroll, Environment } from '@react-three/drei'
 import './App.css'
 
 function App() {
   return (
-    <>
-      <Canvas>
-        <ScrollControls pages={3} damping={0.2} >
-        <Setup position={[0, -1.5, 0]} scale={0.20} />
-        <Environment preset="night" />
-          <Scroll html>
-            <h1>WELCOME MY WEBSITE<img className='teungku' src="/src/assets/img/profil.png" /></h1>
-            <h1 style={{ top: '100vh' }}>ABOUT</h1>
-            <h1 style={{ top: '200vh' }}>PROJECT</h1>
-          </Scroll>
-        </ScrollControls>
-      </Canvas>
-    </>
-  )
+    <div>
+      <div id="home">
+        <Canvas >
+          <ambientLight intensity={0.5} />
+          <directionalLight position={[5, 5, 5]} intensity={1} />
+          <Setup position={[0, -1.5, 0]} scale={0.20} />
+        </Canvas>
+      </div>
+      <div id="about" style={{ height: '100vh' }}>About Section</div>
+      <div id="project" style={{ height: '100vh' }}>Project Section</div>
+      <div id="contact" style={{ height: '100vh' }}>Contact Section</div>
+    </div>
+  );
 }
 
 export default App
